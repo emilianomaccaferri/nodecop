@@ -1,0 +1,312 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:100,200,300,400,500,700');
+
+
+:not(input):not(textarea),
+:not(input):not(textarea)::after,
+:not(input):not(textarea)::before {
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: default;
+}
+input, button, textarea, :focus {
+    outline: none;
+}
+
+body{
+  overflow-x: hidden;
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  background: #fff;
+}
+p.padded, h1.padded{
+  padding: 20px;
+}
+.section{
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.section.column{
+  flex-direction: column;
+}
+.section.padded{
+  padding-top: 40px;
+  padding-bottom: 40px;
+}
+.section h1{
+  font-size: 3em;
+  font-weight: 300;
+  color: #2f3542;
+}
+.section .container{
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 0 auto;
+}
+.section.big{
+  height: 100vh;
+}
+.section.main{
+  background: #1e90ff;
+  color: white;
+}
+.section.main .block .inline{
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+.section.main .block .inline .addtask{
+  padding: 10px;
+  margin: 20px;
+  border: 2px solid #FFF;
+  border-radius: 3px;
+  color: white;
+  transition: .3s all ease;
+  display: inline !important;
+}
+.addtask i{
+  margin-left: 5px;
+}
+.section.main .block .addtask:hover{
+  color: #1e90ff;
+  background: #fff;
+}
+.section.skewed:after{
+  content: '';
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  background: inherit;
+  z-index: -1;
+  bottom: 0;
+  transform-origin: left bottom;
+  transform: skewY(3deg);
+}
+.section .block{
+  padding: 40px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+.section.main .block{
+  animation: comeup 1.25s cubic-bezier(.15,.93,.99,.98);
+}
+.block.bigger{
+  width: 60%;
+}
+.block.sided{
+  border-left: 1px solid rgba(255,255,255,0.3);
+}
+.section h1.title{
+  margin-top: 60px;
+  font-weight: bolder;
+  text-align: center;
+  color: white;
+  font-size: 3.5em;
+}
+.section h2.subtitle{
+  font-weight: lighter;
+  color: white;
+  font-size: 1.4em;
+}
+.stuff{
+  margin-top: 40px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.stuff .chooser{
+  width: 100%;
+  padding-left: 20px;
+  padding-right: 20px;
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+.stuff .chooser .choose{
+  background: #3498db;
+  margin-right: 10px;
+  padding: 10px;
+  color: white;
+  font-size: 1.05em;
+}
+.stuff form .var{
+  display: flex;
+  justify-content: center;
+}
+.stuff form .var select{
+  width: 200px;
+  margin: 0 10px 10px 10px;
+}
+.stuff form .var input.in{
+  width: 100px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.enabled{
+  background: #2ecc71 !important;
+}
+#set{
+  display: none;
+  position: absolute;
+}
+.stuff form{
+  font-size: 1.1em;
+  padding: 20px;
+}
+.stuff form input[type="text"]{
+  width: 100%;
+  border-radius: 2px;
+  text-indent: 20px;
+  background: rgba(0,0,0,0.05);
+  border: none;
+  height: 40px;
+  font-style: 'Roboto', sans-serif;
+  font-size: 1.1em;
+  margin-bottom: 10px;
+}
+.stuff form select{
+  width: 300px;
+  text-indent: 20px;
+  font-size: 1.1em;
+  margin-bottom: 20px;
+  height: 40px;
+  background: #fff;
+  color: #212121;
+  border: 1px solid #DADADA;
+  border-radius: 3px;
+}
+.stuff button{
+  width: 300px;
+  margin-top: -20px;
+  border-radius: 2px;
+  margin-left: 20px;
+  height: 40px;
+  background: #2980b9;
+  font-size: 1.1em;
+  color: #fff;
+  border: 1px solid #DADADA;
+  border-radius: 3px;
+}
+.stuff form .inner{
+  margin-bottom: 20px;
+  background: #e74c3c;
+  padding: 10px;
+  border-radius: 2px;
+  color: white;
+}
+.block.presentation{
+  text-align: justify;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: normal;
+  font-size: 1.2em;
+  color: #2f3542;
+}
+.block.presentation .face{
+  width: 300px;
+  height: 300px;
+  margin-bottom: 50px;
+  background: url(https://cdn.emilianomaccaferri.com/macca/me.jpg);
+  background-position: center;
+  background-size: 300px 300px;
+  border-radius: 300px;
+  border: 2px solid #FFF;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+.block h1:not(.title){
+  margin-bottom: -50px;
+}
+.block .check{
+  font-family: 'Montserrat', sans-serif;
+  background: #fff;
+  width: 500px;
+  align-self: center;
+  padding: 20px;
+  border-radius: 2px;
+  /*box-shadow: 0 1.5px 3px rgba(0,0,0,0.16), 0 1.5px 3px rgba(0,0,0,0.23);*/
+}
+.block .check h1{
+  display: inline-block;
+  border-bottom: 1.5px solid #212121;
+  font-weight: 700;
+  font-family: 'Karla';
+  font-size: 2em;
+  color: #2f3542;
+}
+ul.pretty{
+  font-family: 'Montserrat', sans-serif;
+  background: #fff;
+  list-style: none;
+  padding: 0;
+}
+ul.pretty li{
+  color: #212121;
+  margin: 10px;
+  padding: 20px 0 20px 0;
+  border-bottom: 2px solid #a4b0be;
+  display: inline-block;
+  font-weight: normal;
+}
+.check .dontcare{
+  width: calc(100% - 40px);
+  padding: 20px;
+  margin: 0;
+  background: #1e90ff;
+  color: white;
+  font-weight: lighter;
+  text-align: center;
+  font-size: 1.25em;
+}
+.list{
+  margin: 0 auto;
+  margin-top: 60px;
+  padding: 10px;
+  width: calc(100% - 50px);
+  border-radius: 4px;
+}
+.list .centered{
+  color: #bdc3c7;
+  font-size: 2em;
+  text-align: center;
+  font-weight: bold;
+  padding: 0;
+  margin: 0;
+}
+.list .centered a{
+  color: #2c3e50;
+}
+.rotating{
+  animation: 1s rotate linear infinite;
+}
+.list .item{
+  width: 100%;
+  border-bottom: 2px solid #DADADA;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  color: #212121;
+  transition: 0.2s all ease;
+}
+.list .item:hover{
+  background: rgba(0,0,0,0.05);
+  transform: scale(1.03);
+}
+.list .item span{
+  margin-left: 30px;
+  font-size: 1.1em;
+  color: #2f3542;
+}
+.list .item i{
+  margin-left: 5px;
+  margin-right: 5px;
+}
+@keyframes rotate{
+  from{transform: rotate(0deg);}
+  to{transform: rotate(360deg);}
+}

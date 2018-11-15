@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title> New Task </title>
+    <link href="./css/style.css" rel="stylesheet" type="text/css">
+    <script src="./js/jquery.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/fontawesome/css/all.css">
+  </head>
+  <body>
+    <div class="section skewed main">
+      <div class="block" id="n">
+        <h1 class="title"> Task creator </h1>
+      </div>
+    </div>
+    <div class="stuff">
+      <div class="chooser">
+        <div class="choose" id="informations"> Informations </div>
+        <div class="choose" id="settings"> Settings </div>
+      </div>
+      <div id="info">
+        <form>
+          <input type="text" id="taskName" placeholder="Task name">
+          <input type="text" id="name" placeholder="Billing Name">
+          <input type="text" id="email" placeholder="Email">
+          <input type="text" id="tel" placeholder="Telephone number">
+          <input type="text" id="city" placeholder="City">
+          <input type="text" id="address" placeholder="ZIP code">
+          <input type="text" id="zip" placeholder="ZIP code">
+          <div class="var">
+            <select id="cc">
+              <option value="paypal"> Paypal </option>
+            </select>
+            <select id="country">
+              <option value="IT"> Italy </option>
+            </select>
+          </div>
+          <span class="hidden">
+            <input type="text" id="expiry_month" placeholder="Credit card expiry month">
+            <input type="text" id="expiry_year" placeholder="Credit card expiry year">
+          </span>
+        </form>
+      </div>
+      <div id="set">
+        <form>
+          <input type="text" id="item_name" placeholder="Item name">
+          <select id="size">
+            <option value="n/a"> N/A </option>
+            <option value="Small"> S </option>
+            <option value="Medium"> M </option>
+            <option value="Large"> L </option>
+            <option value="XLarge"> XL </option>
+          </select>
+          <input type="text" id="color" placeholder="Color">
+          <select id="type">
+            <option value="jackets"> Jacket </option>
+            <option value="shirts"> Shirt </option>
+            <option value="tops_sweaters"> Top/Sweater </option>
+            <option value="sweatshirts"> Sweatshirt </option>
+            <option value="pants"> Pants </option>
+            <option value="t-shirts"> T-Shirt </option>
+            <option value="hats"> Hat </option>
+            <option value="bags"> Bag </option>
+            <option value="accessories"> Accessory </option>
+            <option value="skate"> Skate </option>
+          </select>
+         <div class="var">
+           <div class="inner" id="refresh" value="false"> Refresh timer disabled </div>
+           <input type="text" placeholder="Delay" class="in" id="timer-refresh-delay">
+         </div>
+         <div class="var">
+           <div class="inner enabled" id="checkout" value="true"> Auto-checkout enabled </div>
+         </div>
+        </form>
+      </div>
+      <button id="complete"> Add task </button>
+    </div>
+  </body>
+  <script> require("./../../renders/newTask.js") </script>
+</html>

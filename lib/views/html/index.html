@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title> NodeCop </title>
+    <link href="./css/style.css" rel="stylesheet" type="text/css">
+    <script src="./js/jquery.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/fontawesome/css/all.css">
+  </head>
+  <body onload="startTime();">
+    <div class="section skewed main">
+      <div class="block" id="n">
+        <h1 class="title"> NodeCop </h1>
+        <h2 class="subtitle" id="h"> </h2>
+          <div class="inline">
+            <div class="addtask" id="addtask"> Add new task <i class="fas fa-plus"></i></div>
+            <div class="addtask" id="openGoogle"> Google login <i class="fas fa-user"></i></div>
+            <div class="addtask" id="openPaypal"> PayPal login <i class="fab fa-paypal"></i></div>
+          </div>
+      </div>
+    </div>
+    <div class="list" id="profiles">
+    </div>
+  </body>
+  <script>
+  function startTime() {
+    var today = new Date();
+    var h = today.getHours();
+    var m = today.getMinutes();
+    var s = today.getSeconds();
+    m = checkTime(m);
+    s = checkTime(s);
+    document.getElementById('h').innerHTML =  h + ":" + m + ":" + s;
+    var t = setTimeout(startTime, 500);
+  }
+    function checkTime(i) {
+      if (i < 10) {i = "0" + i};
+      return i;
+    }
+  </script>
+  <script> require("./../../renders/mainRenderer.js") </script>
+</html>

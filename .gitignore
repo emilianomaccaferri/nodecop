@@ -1,3 +1,8 @@
+# bot files
+config.base.json*
+config.nodecop*
+createInstaller.js*
+
 # Logs
 logs
 *.log

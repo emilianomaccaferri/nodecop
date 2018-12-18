@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <title> Create a task </title>
+  <link href="css/style.css" rel="stylesheet" type="text/css">
+  <link href="fontawesome/css/all.css" rel="stylesheet" type="text/css">
+  <body>
+    <div class="sider small grey">
+      <div class="icon d" id="task-create"> <p class="label"> Create </p> <i class="fas fa-plus"></i> </div>
+    </div>
+    <div class="container">
+      <div class="header">
+        <h1> New task </h1>
+        <h2 class="thin">Fill out with your billing info</h2>
+      </div>
+      <div class="task-info" style="margin-top: 10px;">
+        <input type="text" placeholder="Task name" id="task-name">
+        <input type="text" placeholder="Billing name" id="task-billing-name">
+        <input type="text" placeholder="Email" id="task-email">
+        <input type="tel" placeholder="Telephone number" id="task-telephone">
+        <input type="text" placeholder="City" id="task-city">
+        <input type="text" placeholder="Address" id="task-address">
+        <input type="number" placeholder="ZIP Code" id="task-zip-code">
+      </div>
+    </div>
+  </body>
+</html>
+<script> require("../lib/ipc/main.js") </script>

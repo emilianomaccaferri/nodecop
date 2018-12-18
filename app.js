@@ -76,14 +76,35 @@ var init = () => {
 
 var task = () => {
 
-  var d = new Date();
-  utils.updateConfig({
+  taskCreator = new BrowserWindow({
 
-    profiles: {
+    backgroundColor: '#fff',
+    center: true,
+    alwaysOnTop: true,
+    fullscreen: false,
+    height: 700,
+    maximizable: true,
+    minimizable: true,
+    resizable: true,
+    show: false,
+    skipTaskbar: true,
+    title: 'Create new task',
+    useContentSize: true,
+    width: 700
 
-      'tonno': []
+  });
 
-    }
+  taskCreator.loadURL(`file://${__dirname}/views/task.html`);
+
+  taskCreator.on('ready-to-show', () => {
+
+    taskCreator.show();
+
+  })
+
+  taskCreator.on('closed', () => {
+
+    taskCreator = null;
 
   })
 
@@ -98,7 +119,7 @@ var task = () => {
 var googleLogin = () => {
 
   google = new BrowserWindow({
-    backgroundColor: '#ffffff',
+    backgroundColor: '#212121',
     center: true,
     fullscreen: false,
     height: 550,

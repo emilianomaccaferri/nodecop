@@ -19,6 +19,9 @@ body{
   font-weight: lighter;
   color: #212121;
 }
+.grey{
+  background: #ced6e0 !important;
+}
 .container .header h2{
   position: relative;
   margin-top: 20px;
@@ -74,7 +77,7 @@ body{
 .sider.small .icon i{
   margin-left: 12.5px;
 }
-.sider.small .icon:hover{
+.sider.small .icon:not(.d):hover{
   background: #3867d6;
   margin-left: 0;
 }
@@ -91,6 +94,44 @@ body{
   width: 60px;
   background: #4b7bec;
   color: white;
+}
+.thin{
+  font-weight: lighter !important;
+}
+.task-info{
+  width: calc(100% - 60px);
+  margin: 0 auto;
+}
+.task-info input{
+  width: 100%;
+  outline: none;
+  text-indent: 5px;
+  border: none;
+  border-bottom: 2px solid #DADADA;
+  height: 45px;
+  margin-bottom: 10px;
+  font-size: 1em;
+}
+.d{
+  transition: .3s all ease !important;
+}
+.d:hover{
+  background: #57606f;
+}
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 
 :not(input):not(textarea),

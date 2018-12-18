@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <title> NodeCop </title>
+  <link href="css/style.css" rel="stylesheet" type="text/css">
+  <link href="fontawesome/css/all.css" rel="stylesheet" type="text/css">
+  <body>
+    <div class="sider small">
+      <div class="icon" id="new"> <p class="label"> New </p> <i class="fas fa-plus"></i> </div>
+      <div class="icon" id="g-login"> <p class="label"> Google login </p> <i class="fab fa-google"></i> </div>
+      <div class="icon" id="captcha-harvest"> <p class="label"> Captchas </p> <i class="fas fa-robot"></i> </div>
+      <div class="icon" id="info"> <p class="label"> About </p> <i class="fas fa-info"></i> </div>
+      <div class="icon" id="donate"> <p class="label"> Donate </p><i class="fas fa-hand-holding-usd"></i> </div>
+      <div class="icon" id="logs"> <p class="label"> Logs </p> <i class="far fa-calendar"></i> </div>
+      <div class="icon" id="exit"> <p class="label"> Exit </p> <i class="fas fa-power-off"></i> </div>
+    </div>
+    <div class="container">
+      <div class="header">
+        <h1> Welcome to NodeCop </h1>
+        <h2 id="h"></h2>
+      </div>
+      <p class="info"> Your tasks </p>
+      <div class="task-list">
+        <p class="announce"> No tasks available, create a new one by clicking on the "+" icon </p>
+      </div>
+    </div>
+  </body>
+</html>
+
+<script>
+  function startTime() {
+    var today = new Date();
+    var h = today.getHours();
+    var m = today.getMinutes();
+    var s = today.getSeconds();
+    m = checkTime(m);
+    s = checkTime(s);
+    document.getElementById('h').innerHTML =  h + ":" + m + ":" + s;
+    var t = setTimeout(startTime, 500);
+  }
+    function checkTime(i) {
+      if (i < 10) {i = "0" + i};
+      return i;
+    }
+
+  startTime();
+
+  </script>
+  <script> require("../lib/ipc/main.js") </script>

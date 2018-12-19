@@ -1,6 +1,9 @@
+'use strict'
+
 const {app, ipcMain, BrowserWindow, session, dialog, Menu} = require('electron');
 const DATA_DIR = app.getPath('userData');
 const utils = require("./lib/Utils");
+const Task = require("./lib/Task");
 utils.DATA_DIR = DATA_DIR
 const fs = require("fs");
 
@@ -23,7 +26,7 @@ logger.info('starting up NodeCop')
 
 ///////// MAIN WINDOW
 
-var main, google, taskCreator;
+var main, google, taskCreator, tasks = {};
 const mainTemplate = [
 
   {
@@ -53,7 +56,16 @@ var init = () => {
   utils.loadConfig()
     .then(success => {
 
-      console.log(utils.config);
+      logger.info('config decrypted')
+      var entries = Object.entries(utils.config);
+      entries.map(e => {
+
+        console.log(typeof e[1]);
+
+        var t = new Task(e[1])
+        tasks[e[0]] = t;
+
+      })
 
       main = new BrowserWindow({width: 800, height: 900, minHeight: 900, minWidth: 800, show: false, fullscreenable: true, center: true})
       const m = Menu.buildFromTemplate(mainTemplate);
@@ -62,6 +74,8 @@ var init = () => {
       main.loadURL(`file://${__dirname}/views/index.html`);
       main.on('ready-to-show', () => {
 
+        main.webContents.send('config', utils.config)
+        // main.openDevTools();
         main.show();
 
       })
@@ -99,6 +113,7 @@ var task = () => {
   taskCreator.on('ready-to-show', () => {
 
     taskCreator.show();
+    // taskCreator.openDevTools();
     taskCreator.setAlwaysOnTop(true)
 
   })
@@ -153,6 +168,27 @@ var googleLogin = () => {
 
 
 // IPC Events
+
+ipcMain.on('create-task', (event, item) => {
+
+  logger.info('creating new task (', item.task_id, ' - ', item.task_name, ')')
+  utils.config[item.task_id] = item;
+  utils.updateConfig(utils.config)
+    .then(success => {
+
+      t = new Task(item);
+      tasks[item.item_id] = t;
+      main.webContents.send('task-update', item)
+
+    })
+
+    .catch(err => {
+
+      logger.error('uh oh', err)
+
+    })
+
+})
 
 ipcMain.on('google-login', () => {
 

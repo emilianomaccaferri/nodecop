@@ -5,7 +5,7 @@
   <link href="fontawesome/css/all.css" rel="stylesheet" type="text/css">
   <body style="overflow-x: hidden;">
     <div class="sider small grey">
-      <div class="icon d" id="task-create"> <p class="label"> Create </p> <i class="fas fa-plus"></i> </div>
+      <div class="icon d" id="create"> <p class="label"> Create </p> <i class="fas fa-plus"></i> </div>
     </div>
     <div class="container">
       <div class="header">
@@ -19,24 +19,24 @@
       <div class="task-info" id="i" style="position: absolute; background: #fff; z-index: 4; width: calc(100% - 60px); height: 600px; right: -700px;">
         <input type="text" placeholder="Item name" id="task-item-name" style="width: calc(100% - 60px)">
         <div class="chooser" style="margin-top: 20px; margin-bottom: 20px; margin-left: 0; justify-content: center;">
-          <div class="item-picker" id="jackets"> Jacket </div>
-          <div class="item-picker" id="shirts"> Shirt </div>
-          <div class="item-picker" id="tops_sweaters"> M </div>
-          <div class="item-picker" id="sweatshirts"> L </div>
-          <div class="item-picker" id="pants"> XL </div>
-          <div class="item-picker" id="t-shirts"> XXL </div>
-          <div class="item-picker" id="hats"> XXL </div>
-          <div class="item-picker" id="bags"> XXL </div>
-          <div class="item-picker" id="accessories"> XXL </div>
-          <div class="item-picker" id="skate"> XXL </div>
+          <div class="item-picker" value="jackets"> Jacket </div>
+          <div class="item-picker" value="shirts"> Shirt </div>
+          <div class="item-picker" value="tops_sweaters"> Top/Sweater </div>
+          <div class="item-picker" value="sweatshirts"> Sweatshirt </div>
+          <div class="item-picker" value="pants"> Pants </div>
+          <div class="item-picker" value="t-shirts"> T-shirt </div>
+          <div class="item-picker" value="hats"> Hat </div>
+          <div class="item-picker" value="bags"> Bag </div>
+          <div class="item-picker" value="accessories"> Accessory </div>
+          <div class="item-picker" value="skate"> Skate </div>
         </div>
         <input type="text" placeholder="Item color" id="task-item-color" style="width: calc(100% - 60px)">
         <div class="chooser" style="margin-top: 20px; margin-bottom: 20px; margin-left: 0; justify-content: center;">
-          <div class="size-picker" id="n/a"> N/A </div>
-          <div class="size-picker" id="Small"> S </div>
-          <div class="size-picker" id="Medium"> M </div>
-          <div class="size-picker" id="Large"> L </div>
-          <div class="size-picker" id="XLarge"> XL </div>
+          <div class="size-picker" value="n/a"> N/A </div>
+          <div class="size-picker" value="Small"> S </div>
+          <div class="size-picker" value="Medium"> M </div>
+          <div class="size-picker" value="Large"> L </div>
+          <div class="size-picker" value="XLarge"> XL </div>
         </div>
       </div>
       <div class="task-info" id="billing">
@@ -45,8 +45,25 @@
         <input type="text" placeholder="Email" id="task-email">
         <input type="tel" placeholder="Telephone number" id="task-telephone">
         <input type="text" placeholder="City" id="task-city">
+        <input type="text" placeholder="Country" id="task-country">
         <input type="text" placeholder="Address" id="task-address">
         <input type="number" placeholder="ZIP Code" id="task-zip-code">
+        <div class="chooser" style="justify-content: center;">
+          <div class="cc-picker" value="paypal"> Pay with PayPal </div>
+          <div class="cc-picker" value="cc"> Pay with CC </div>
+        </div>
+        <div class="paypal">
+          <input type="text" placeholder="PayPal email" id="task-paypal-email">
+          <input type="password" placeholder="PayPal password" id="task-paypal-password">
+        </div>
+        <div class="cc">
+          <input type="text" placeholder="Credit card number" id="task-cc-number">
+          <select id="task-cc-type">
+            <option value=""
+          </select>
+          <input type="text" placeholder="Credit card expiry (month/year)" id="task-cc-expiry">
+          <input type="number" maxlength="3" placeholder="Credit card CVV (three digits on the back)" id="task-cc-cvv">
+        </div>
       </div>
     </div>
   </body>

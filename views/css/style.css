@@ -29,14 +29,16 @@ body{
   font-size: 2em;
   color: rgba(0,0,0,0.8)
 }
-.container p.info{
+.container .info{
+  position: relative;
   padding: 10px;
   margin-left: 30px;
   display: inline-block;
-  background: #3867d6;
+  background: #4b7bec;
   color: white;
   font-size: 1.2em;
   font-weight: lighter;
+  z-index: 100;
 }
 .container .task-list{
   width: 100%;
@@ -47,10 +49,27 @@ body{
   font-weight: 400;
   color: #dadada
 }
-.container .task-list .task{
-  margin-left: 0 !important;
+.info .filler{
+  position: absolute;
+  width: 0%;
+  height: 100%;
+  z-index: -1;
+  top: 0;
+  right: 0;
+  transition: .5s all ease;
+  background: #3867d6;
+}
+.info:hover > .filler{
   width: 100%;
+  left: 0;
+  right: auto;
+}
+.container .task-list .task{
+  margin: 20px auto 0 auto;
+  width: calc(100% - 60px);
   height: 45px;
+  line-height: 45px;
+  text-indent: 6px;
   border-bottom: 1px solid #DADADA;
 }
 .sider{
@@ -122,17 +141,21 @@ body{
   display: -webkit-flex;
   flex-wrap: wrap;
 }
-.chooser .picker, .chooser .item-picker, .chooser .size-picker{
+.chooser .picker, .chooser .item-picker, .chooser .size-picker, .chooser .cc-picker{
   width: 100px;
   text-align: center;
   padding: 10px;
   background: #576574;
   color: white;
 }
-.chooser .item-picker{
+.chooser .item-picker, .chooser .cc-picker{
   width: 200px !important;
 }
-.chooser .item-picker{
+.chooser .cc-picker{
+  margin-left: -30px !important;
+  margin-top: 20px;
+}
+.chooser .size-picker{
   width: 50px;
 }
 .selected{
@@ -140,6 +163,10 @@ body{
 }
 .d:hover{
   background: #57606f;
+}
+.paypal, .cc{
+  margin-top: 20px;
+  display: none;
 }
 ::-webkit-scrollbar {
   width: 10px;

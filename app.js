@@ -58,6 +58,10 @@ var init = () => {
 
       logger.info('config decrypted')
       var entries = Object.entries(utils.config);
+
+      // we load tasks so we already have them in memory
+      // just to speed up things
+
       entries.map(e => {
 
         console.log(typeof e[1]);

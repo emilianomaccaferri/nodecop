@@ -82,10 +82,10 @@ var task = () => {
     center: true,
     alwaysOnTop: true,
     fullscreen: false,
-    height: 700,
-    maximizable: true,
+    height: 900,
+    maximizable: false,
     minimizable: true,
-    resizable: true,
+    resizable: false,
     show: false,
     skipTaskbar: true,
     title: 'Create new task',
@@ -99,6 +99,7 @@ var task = () => {
   taskCreator.on('ready-to-show', () => {
 
     taskCreator.show();
+    taskCreator.setAlwaysOnTop(true)
 
   })
 
@@ -121,6 +122,7 @@ var googleLogin = () => {
   google = new BrowserWindow({
     backgroundColor: '#212121',
     center: true,
+    alwaysOnTop: true,
     fullscreen: false,
     height: 550,
     maximizable: false,
@@ -134,6 +136,7 @@ var googleLogin = () => {
   });
 
   google.show();
+  google.setAlwaysOnTop(true)
   google.loadURL('https://accounts.google.com/signin/v2/identifier?hl=en&service=youtube&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Ffeature%3Dsign_in_button%26hl%3Den%26app%3Ddesktop%26next%3D%252F%26action_handle_signin%3Dtrue&passive=true&uilel=3&flowName=GlifWebSignIn&flowEntry=ServiceLogin')
 
   google.on('closed', () => {

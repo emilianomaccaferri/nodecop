@@ -3,7 +3,7 @@
   <title> Create a task </title>
   <link href="css/style.css" rel="stylesheet" type="text/css">
   <link href="fontawesome/css/all.css" rel="stylesheet" type="text/css">
-  <body>
+  <body style="overflow-x: hidden;">
     <div class="sider small grey">
       <div class="icon d" id="task-create"> <p class="label"> Create </p> <i class="fas fa-plus"></i> </div>
     </div>
@@ -11,8 +11,35 @@
       <div class="header">
         <h1> New task </h1>
         <h2 class="thin">Fill out with your billing info</h2>
+        <div class="chooser">
+          <div class="picker selected"> Billing </div>
+          <div class="picker" id="item"> Item </div>
+        </div>
       </div>
-      <div class="task-info" style="margin-top: 10px;">
+      <div class="task-info" id="i" style="position: absolute; background: #fff; z-index: 4; width: calc(100% - 60px); height: 600px; right: -700px;">
+        <input type="text" placeholder="Item name" id="task-item-name" style="width: calc(100% - 60px)">
+        <div class="chooser" style="margin-top: 20px; margin-bottom: 20px; margin-left: 0; justify-content: center;">
+          <div class="item-picker" id="jackets"> Jacket </div>
+          <div class="item-picker" id="shirts"> Shirt </div>
+          <div class="item-picker" id="tops_sweaters"> M </div>
+          <div class="item-picker" id="sweatshirts"> L </div>
+          <div class="item-picker" id="pants"> XL </div>
+          <div class="item-picker" id="t-shirts"> XXL </div>
+          <div class="item-picker" id="hats"> XXL </div>
+          <div class="item-picker" id="bags"> XXL </div>
+          <div class="item-picker" id="accessories"> XXL </div>
+          <div class="item-picker" id="skate"> XXL </div>
+        </div>
+        <input type="text" placeholder="Item color" id="task-item-color" style="width: calc(100% - 60px)">
+        <div class="chooser" style="margin-top: 20px; margin-bottom: 20px; margin-left: 0; justify-content: center;">
+          <div class="size-picker" id="n/a"> N/A </div>
+          <div class="size-picker" id="Small"> S </div>
+          <div class="size-picker" id="Medium"> M </div>
+          <div class="size-picker" id="Large"> L </div>
+          <div class="size-picker" id="XLarge"> XL </div>
+        </div>
+      </div>
+      <div class="task-info" id="billing">
         <input type="text" placeholder="Task name" id="task-name">
         <input type="text" placeholder="Billing name" id="task-billing-name">
         <input type="text" placeholder="Email" id="task-email">
@@ -24,4 +51,4 @@
     </div>
   </body>
 </html>
-<script> require("../lib/ipc/main.js") </script>
+<script> require("../lib/ipc/task.js") </script>

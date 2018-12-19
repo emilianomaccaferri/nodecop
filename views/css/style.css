@@ -101,6 +101,7 @@ body{
 .task-info{
   width: calc(100% - 60px);
   margin: 0 auto;
+  text-align: center;
 }
 .task-info input{
   width: 100%;
@@ -114,6 +115,28 @@ body{
 }
 .d{
   transition: .3s all ease !important;
+}
+.chooser{
+  margin-left: 30px;
+  display: flex;
+  display: -webkit-flex;
+  flex-wrap: wrap;
+}
+.chooser .picker, .chooser .item-picker, .chooser .size-picker{
+  width: 100px;
+  text-align: center;
+  padding: 10px;
+  background: #576574;
+  color: white;
+}
+.chooser .item-picker{
+  width: 200px !important;
+}
+.chooser .item-picker{
+  width: 50px;
+}
+.selected{
+  background: #222f3e !important;
 }
 .d:hover{
   background: #57606f;

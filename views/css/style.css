@@ -19,6 +19,12 @@ body{
   font-weight: lighter;
   color: #212121;
 }
+.status{
+  margin-left: 50px;
+  font-weight: lighter;
+  font-size: 0.89em;
+  color: #778ca3;
+}
 .grey{
   background: #ced6e0 !important;
 }

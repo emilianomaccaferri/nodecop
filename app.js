@@ -61,11 +61,8 @@ var init = () => {
 
       // we load tasks so we already have them in memory
       // just to speed up things
-      console.log(utils.config);
 
       entries.map(e => {
-
-        console.log(typeof e[1]);
 
         var t = new Task(e[1])
         tasks[e[0]] = t;
@@ -80,7 +77,7 @@ var init = () => {
       main.on('ready-to-show', () => {
 
         main.webContents.send('config', utils.config)
-        // main.openDevTools();
+        main.openDevTools();
         main.show();
 
       })
@@ -174,11 +171,36 @@ var googleLogin = () => {
 
 // IPC Events
 
+ipcMain.on('stop-task', (event, id) => {
+
+  var task = tasks[id];
+  task.stop();
+
+})
+
 ipcMain.on('run-task', async(event, id) => {
 
-  console.log(tasks);
   var task = tasks[id];
-  await task.run()
+
+  task.on('searching', () => {
+
+    logger.info(`searching item ${id}`)
+
+  })
+
+  task.on('sold_out', () => {
+
+    logger.info(`item sold out (maybe) ${id}`)
+    if(task.stopped)
+      return;
+
+    setTimeout(() => {
+
+      task.run();
+
+    }, 1000)
+
+  }).run();
 
 })
 

@@ -61,6 +61,7 @@ var init = () => {
 
       // we load tasks so we already have them in memory
       // just to speed up things
+      console.log(utils.config);
 
       entries.map(e => {
 
@@ -173,6 +174,25 @@ var googleLogin = () => {
 
 // IPC Events
 
+ipcMain.on('run-task', async(event, id) => {
+
+  console.log(tasks);
+  var task = tasks[id];
+  await task.run()
+
+})
+
+ipcMain.on('remove-task', async(event, id) => {
+
+  var item = utils.config[id]
+  logger.info('removing task (', item.task_id, ' - ', item.task_name, ')')
+  delete utils.config[item.task_id];
+  delete tasks[id]
+  await utils.updateConfig(utils.config)
+  logger.info('config updated')
+
+})
+
 ipcMain.on('create-task', (event, item) => {
 
   logger.info('creating new task (', item.task_id, ' - ', item.task_name, ')')
@@ -180,7 +200,7 @@ ipcMain.on('create-task', (event, item) => {
   utils.updateConfig(utils.config)
     .then(success => {
 
-      t = new Task(item);
+      var t = new Task(item);
       tasks[item.item_id] = t;
       main.webContents.send('task-update', item)
 

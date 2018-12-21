@@ -1,0 +1,41 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.google.com/recaptcha/api.js"></script>
+    <style>
+      body{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    </style>
+  </head>
+  <body>
+  <form>
+      <div class="g-recaptcha" id="c" data-sitekey="6LeWwRkUAAAAAOBsau7KpuC9AV-6J8mhw4AjC3Xz" data-callback="yes"></div>
+  </form>
+  <script>
+    if (typeof module === 'object') {
+      window.module = module;
+      module = undefined;
+    }
+ </script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+  grecaptcha.ready(function() {
+    var a = $("form div div iframe")[0];
+    console.log(a.click())
+  });
+  const remote = require('electron').remote
+  const app = remote.app
+  const ipcRenderer = require('electron').ipcRenderer
+  console.log(remote.getCurrentWindow())
+  $(".recaptcha-checkbox-checkmark").trigger('click');
+  $(".recaptcha-checkbox-checkmark").click();
+  function yes() {
+    console.log($('#g-recaptcha-response').val())
+    ipcRenderer.send('cap', {captcha: $('#g-recaptcha-response').val(), task_id: remote.getCurrentWindow().task_id);
+    grecaptcha.reset();
+  }
+</script>
+  </body>
+</html>

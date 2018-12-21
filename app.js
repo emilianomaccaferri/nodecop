@@ -6,6 +6,12 @@ const utils = require("./lib/Utils");
 const Task = require("./lib/Task");
 utils.DATA_DIR = DATA_DIR
 const fs = require("fs");
+const express = require("express");
+const bodyParser = require("body-parser");
+const path = require("path")
+const Promise = require("promise")
+
+// btw thanks to https://github.com/dzt/captcha-harvester for the captcha stuff
 
 if (!fs.existsSync(DATA_DIR + '/logs')) {
     fs.mkdirSync(DATA_DIR + '/logs')
@@ -26,7 +32,14 @@ logger.info('starting up NodeCop')
 
 ///////// MAIN WINDOW
 
-var main, google, taskCreator, tasks = {};
+var main, google, taskCreator, tasks = {}, captchas = [], expressApp;
+
+expressApp = express() // i need a proxy for the captcha
+expressApp.set('port', 9090);
+expressApp.use(bodyParser.json());
+expressApp.use(bodyParser.urlencoded({ extended: true }));
+var server;
+
 const mainTemplate = [
 
   {
@@ -168,23 +181,70 @@ var googleLogin = () => {
 
 //////////////////////
 
+var loadCaptcha = async(id, name) => {
 
-// IPC Events
+  var last = captchas.push(new BrowserWindow({
 
-ipcMain.on('stop-task', (event, id) => {
+      backgroundColor: '#ffffff',
+      center: true,
+      fullscreen: false,
+      height: 550,
+      maximizable: false,
+      minimizable: false,
+      resizable: false,
+      show: false,
+      skipTaskbar: true,
+      title: name,
+      useContentSize: true,
+      width: 600
 
-  var task = tasks[id];
-  task.stop();
+  }))
 
-})
+  console.log(captchas)
+  //var captchas[last - 1] = captchas[last - 1];
 
-ipcMain.on('run-task', async(event, id) => {
+  expressApp.get('/', (req, res) => {
+
+      res.sendFile('./views/captcha.html', {root: __dirname});
+      captchas[last - 1].webContents.session.setProxy({proxyRules: ""}, () => {})
+
+  })
+
+  main.webContents.session.setProxy({
+    proxyRules: `http://127.0.0.1:9090`
+  },
+    function (r) {
+      captchas[last - 1].loadURL('http://www.supremenewyork.com');
+    });
+
+    captchas[last - 1].setMenu(null);
+
+    captchas[last - 1].once('closed', function() {
+      delete captchas.pop(captchas[last - 1]);
+      captchas.shift();
+      main.webContents.send('closed', id)
+  })
+  captchas[last - 1].show();
+  captchas[last - 1].webContents.task_id = id;
+  return captchas[last - 1]
+
+}
+
+
+var runTask = (id) => {
 
   var task = tasks[id];
 
   task.on('searching', () => {
 
     logger.info(`searching item ${id}`)
+
+  })
+
+  task.on('task-captcha', () => {
+
+    console.log(task);
+    loadCaptcha(id, task.item.item_name)
 
   })
 
@@ -201,6 +261,22 @@ ipcMain.on('run-task', async(event, id) => {
     }, 1000)
 
   }).run();
+
+}
+
+
+// IPC Events
+
+ipcMain.on('stop-task', (event, id) => {
+
+  var task = tasks[id];
+  task.stop();
+
+})
+
+ipcMain.on('run-task', async(event, id) => {
+
+  runTask(id)
 
 })
 
@@ -262,7 +338,7 @@ app.on('window-all-closed', () => {
 
 app.on('activate', () => {
 
-  if (mainWindow === null)
+  if (main === null)
     init()
 
 })

@@ -21,21 +21,27 @@
  </script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script>
-  grecaptcha.ready(function() {
-    var a = $("form div div iframe")[0];
-    console.log(a.click())
-  });
+
   const remote = require('electron').remote
-  const app = remote.app
-  const ipcRenderer = require('electron').ipcRenderer
-  console.log(remote.getCurrentWindow())
-  $(".recaptcha-checkbox-checkmark").trigger('click');
-  $(".recaptcha-checkbox-checkmark").click();
-  function yes() {
-    console.log($('#g-recaptcha-response').val())
-    ipcRenderer.send('cap', {captcha: $('#g-recaptcha-response').val(), task_id: remote.getCurrentWindow().task_id);
-    grecaptcha.reset();
+  const ipcRenderer = require('electron').ipcRenderer;
+
+  function yes(callback) {
+
+    return new Promise(
+
+      (resolve, reject) => {
+
+        console.log(callback);
+        ipcRenderer.send('captcha-incoming', {captcha: callback, task_id: remote.getCurrentWindow().task_id});
+        console.log("heyyy");
+        grecaptcha.reset();
+
+      }
+
+    )
+
   }
+
 </script>
-  </body>
+</body>
 </html>

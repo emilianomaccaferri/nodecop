@@ -1,15 +1,15 @@
 'use strict'
 
-const {app, ipcMain, BrowserWindow, session, dialog, Menu} = require('electron');
+const {app, shell, ipcMain, BrowserWindow, session, dialog, Menu} = require('electron');
 const DATA_DIR = app.getPath('userData');
 const utils = require("./lib/Utils");
 const Task = require("./lib/Task");
+const Waiter = require("./lib/Waiter");
 utils.DATA_DIR = DATA_DIR
 const fs = require("fs");
 const express = require("express");
 const bodyParser = require("body-parser");
 const path = require("path")
-const Promise = require("promise")
 
 // btw thanks to https://github.com/dzt/captcha-harvester for the captcha stuff
 
@@ -32,13 +32,20 @@ logger.info('starting up NodeCop')
 
 ///////// MAIN WINDOW
 
-var main, google, taskCreator, tasks = {}, captchas = [], expressApp;
+var main, google, taskCreator, tasks = {}, captchas = {}, c = [], expressApp, server;
 
-expressApp = express() // i need a proxy for the captcha
+expressApp = express() // useful for captchas and proxy
 expressApp.set('port', 9090);
 expressApp.use(bodyParser.json());
 expressApp.use(bodyParser.urlencoded({ extended: true }));
-var server;
+
+expressApp.get('/c', (req, res) => {
+
+  res.json(c)
+
+})
+
+expressApp.listen(expressApp.get('port'));
 
 const mainTemplate = [
 
@@ -77,7 +84,7 @@ var init = () => {
 
       entries.map(e => {
 
-        var t = new Task(e[1])
+        var t = new Task(e[1], new Waiter())
         tasks[e[0]] = t;
 
       })
@@ -90,7 +97,7 @@ var init = () => {
       main.on('ready-to-show', () => {
 
         main.webContents.send('config', utils.config)
-        main.openDevTools();
+      //main.openDevTools();
         main.show();
 
       })
@@ -183,7 +190,9 @@ var googleLogin = () => {
 
 var loadCaptcha = async(id, name) => {
 
-  var last = captchas.push(new BrowserWindow({
+  // thanks to https://github.com/dzt/captcha-harvester
+
+  captchas[id] = new BrowserWindow({
 
       backgroundColor: '#ffffff',
       center: true,
@@ -196,9 +205,11 @@ var loadCaptcha = async(id, name) => {
       skipTaskbar: true,
       title: name,
       useContentSize: true,
-      width: 600
+      width: 1000
 
-  }))
+  })
+
+  var last = captchas[id];
 
   console.log(captchas)
   //var captchas[last - 1] = captchas[last - 1];
@@ -206,7 +217,7 @@ var loadCaptcha = async(id, name) => {
   expressApp.get('/', (req, res) => {
 
       res.sendFile('./views/captcha.html', {root: __dirname});
-      captchas[last - 1].webContents.session.setProxy({proxyRules: ""}, () => {})
+      last.webContents.session.setProxy({proxyRules: ""}, () => {})
 
   })
 
@@ -214,19 +225,19 @@ var loadCaptcha = async(id, name) => {
     proxyRules: `http://127.0.0.1:9090`
   },
     function (r) {
-      captchas[last - 1].loadURL('http://www.supremenewyork.com');
+      last.loadURL('http://www.supremenewyork.com');
     });
 
-    captchas[last - 1].setMenu(null);
+    last.setMenu(null);
 
-    captchas[last - 1].once('closed', function() {
-      delete captchas.pop(captchas[last - 1]);
-      captchas.shift();
+    last.once('closed', function() {
+      delete captchas[id];
       main.webContents.send('closed', id)
   })
-  captchas[last - 1].show();
-  captchas[last - 1].webContents.task_id = id;
-  return captchas[last - 1]
+  last.show();
+  //last.openDevTools();
+  last["task_id"] = id;
+  return last
 
 }
 
@@ -235,16 +246,27 @@ var runTask = (id) => {
 
   var task = tasks[id];
 
+  task.on('error', (err) => {
+
+    logger.info(`${id} ${err.error}`)
+
+  })
+
+  task.on('pay-url', (url) => {
+
+    shell.openExternal(url)
+
+  })
+
   task.on('searching', () => {
 
     logger.info(`searching item ${id}`)
 
   })
 
-  task.on('task-captcha', () => {
+  task.on('task-captcha', async() => {
 
-    console.log(task);
-    loadCaptcha(id, task.item.item_name)
+    await loadCaptcha(id, task.item.item_name)
 
   })
 
@@ -266,6 +288,19 @@ var runTask = (id) => {
 
 
 // IPC Events
+
+ipcMain.on('captcha-incoming', (event, captcha) => {
+
+  'use strict';
+
+  var task = tasks[captcha.task_id];
+
+  logger.info(`got captcha response for task #${captcha.task_id}`)
+  console.log(captcha.captcha);
+
+  task.hey(captcha.captcha);
+
+})
 
 ipcMain.on('stop-task', (event, id) => {
 
@@ -298,7 +333,7 @@ ipcMain.on('create-task', (event, item) => {
   utils.updateConfig(utils.config)
     .then(success => {
 
-      var t = new Task(item);
+      var t = new Task(item, new Waiter());
       tasks[item.item_id] = t;
       main.webContents.send('task-update', item)
 

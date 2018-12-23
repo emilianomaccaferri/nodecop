@@ -4,7 +4,6 @@ const {app, shell, ipcMain, BrowserWindow, session, dialog, Menu} = require('ele
 const DATA_DIR = app.getPath('userData');
 const utils = require("./lib/Utils");
 const Task = require("./lib/Task");
-const Waiter = require("./lib/Waiter");
 utils.DATA_DIR = DATA_DIR
 const fs = require("fs");
 const express = require("express");

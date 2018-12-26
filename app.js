@@ -32,10 +32,9 @@ logger.info('starting up NodeCop')
 
 ///////// MAIN WINDOW
 
-var main, google, taskCreator, tasks = {}, yeezy = {}, captchas = {}, c = [], expressApp, server;
-
+var main, google, taskCreator, tasks = {}, captchas = {}, c = [], expressApp, server, trainer;
 expressApp = express() // useful for captchas and proxy
-expressApp.set('port', 9090);
+expressApp.set('port', 2222);
 expressApp.use(bodyParser.json());
 expressApp.use(bodyParser.urlencoded({ extended: true }));
 
@@ -84,13 +83,8 @@ var init = () => {
 
       entries.map(e => {
 
-        if(e[0].split("-").length > 0){
-          var t = new YeezyTask(e[1])
-          yeezy[e[0]] = t;
-        }else{
-          var t = new Task(e[1])
-          tasks[e[0]] = t;
-        }
+        var t = new Task(e[1])
+        tasks[e[0]] = t;
 
       })
 
@@ -98,13 +92,11 @@ var init = () => {
       const m = Menu.buildFromTemplate(mainTemplate);
       Menu.setApplicationMenu(m)
 
-      console.log("asdads");
-
       main.loadURL(`file://${__dirname}/views/index.html`);
       main.on('ready-to-show', () => {
 
         main.webContents.send('config', utils.config)
-      //main.openDevTools();
+        // main.openDevTools();
         main.show();
 
       })
@@ -198,6 +190,53 @@ var googleLogin = () => {
 
 //////////////////////
 
+var loadTrainer = async() => {
+
+  if(!(trainer == null))
+    return;
+
+  trainer = new BrowserWindow({
+
+      backgroundColor: '#ffffff',
+      center: true,
+      fullscreen: false,
+      height: 550,
+      maximizable: false,
+      minimizable: false,
+      resizable: false,
+      show: false,
+      skipTaskbar: true,
+      title: 'Captchas',
+      useContentSize: true,
+      width: 1000
+
+  })
+
+  expressApp.get('/', (req, res) => {
+
+      res.sendFile('./views/captcha.html', {root: __dirname});
+      trainer.webContents.session.setProxy({proxyRules: ""}, () => {})
+
+  })
+
+  main.webContents.session.setProxy({
+    proxyRules: `http://127.0.0.1:2222`
+  },
+    function (r) {
+      trainer.loadURL('http://www.supremenewyork.com');
+    });
+
+    trainer.setMenu(null);
+
+    trainer.once('closed', function() {
+      trainer = null;
+  })
+  trainer.show();
+  //trainer.openDevTools();
+  return trainer;
+
+}
+
 var loadCaptcha = async(id, name) => {
 
   // thanks to https://github.com/dzt/captcha-harvester
@@ -220,7 +259,6 @@ var loadCaptcha = async(id, name) => {
   })
 
   var last = captchas[id];
-
   console.log(captchas)
   //var captchas[last - 1] = captchas[last - 1];
 
@@ -232,7 +270,7 @@ var loadCaptcha = async(id, name) => {
   })
 
   main.webContents.session.setProxy({
-    proxyRules: `http://127.0.0.1:9090`
+    proxyRules: `http://127.0.0.1:2222`
   },
     function (r) {
       last.loadURL('http://www.supremenewyork.com');
@@ -242,10 +280,11 @@ var loadCaptcha = async(id, name) => {
 
     last.once('closed', function() {
       delete captchas[id];
+      last = null;
       main.webContents.send('closed', id)
   })
   last.show();
-  //last.openDevTools();
+  //1last.openDevTools();
   last["task_id"] = id;
   return last
 
@@ -273,6 +312,8 @@ var runTask = async(id) => {
 
   var task = tasks[id];
 
+  task.run();
+
   task.on('error', (err) => {
 
     logger.info(`${id} ${err.error}`)
@@ -293,23 +334,25 @@ var runTask = async(id) => {
 
   task.on('task-captcha', async() => {
 
-    await loadCaptcha(id, task.item.item_name)
+    console.log(id, task.item.item_name);
+    var c = await loadCaptcha(id, task.item.item_name);
+
+    console.log(c);
 
   })
 
   task.on('sold_out', () => {
 
-    logger.info(`item sold out (maybe) ${id}`)
-    if(task.stopped)
-      return;
+    logger.info(`item sold out (maybe) ${id}`);
 
     setTimeout(() => {
 
+      logger.info(`retrying ${id}`);
       task.run();
 
     }, 1000)
 
-  }).run();
+  })
 
 }
 
@@ -323,7 +366,7 @@ ipcMain.on('captcha-incoming', (event, captcha) => {
   var task = tasks[captcha.task_id];
 
   logger.info(`got captcha response for task #${captcha.task_id}`)
-  console.log(captcha.captcha);
+  captchas[captcha.task_id].close();
 
   task.hey(captcha.captcha);
 
@@ -338,6 +381,7 @@ ipcMain.on('stop-task', (event, id) => {
 
 ipcMain.on('run-task', async(event, id) => {
 
+  console.log(`running ${id}`);
   await runTask(id)
 
 })
@@ -383,6 +427,17 @@ ipcMain.on('new-task', () => {
 
 })
 
+ipcMain.on('trainer', () => {
+
+  loadTrainer();
+
+})
+
+ipcMain.on('close', () => {
+
+  app.quit();
+
+})
 /*ipcMain.on('new-task-yeezy', () => {
 
   task(true);
@@ -395,6 +450,8 @@ app.on('ready', init)
 app.on('window-all-closed', () => {
 
   fs.renameSync(DATA_DIR + '/logs/latest.log', DATA_DIR + '/logs/nodecop-' + new Date().getTime() + '.log')
+
+  session.defaultSession.clearStorageData([]);
 
   if (process.platform !== 'darwin')
     app.quit()

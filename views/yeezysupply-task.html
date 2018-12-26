@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <title> Create a task </title>
+  <link href="css/style.css" rel="stylesheet" type="text/css">
+  <link href="fontawesome/css/all.css" rel="stylesheet" type="text/css">
+  <body style="overflow-x: hidden;">
+    <div class="sider small grey">
+      <div class="icon d" id="create"> <p class="label"> Create </p> <i class="fas fa-plus"></i> </div>
+    </div>
+    <div class="container">
+      <div class="header">
+        <h1> New task </h1>
+        <h2 class="thin">Fill out with your billing info</h2>
+        <div class="chooser">
+          <div class="picker selected"> Billing </div>
+          <div class="picker" id="item"> Item </div>
+        </div>
+      </div>
+      <div class="task-info" id="i" style="position: absolute; background: #fff; z-index: 4; width: calc(100% - 60px); height: 600px; right: -700px;">
+        <input type="text" placeholder="Item name" id="task-item-name" style="width: calc(100% - 60px)">
+        <div class="chooser" style="margin-top: 20px; margin-bottom: 20px; margin-left: 0; justify-content: center;">
+          <div class="size-picker" value="36"> 36 </div>
+          <div class="size-picker" value="36 2/3"> 36 2/3 </div>
+          <div class="size-picker" value="37 1/3"> 37 1/3 </div>
+          <div class="size-picker" value="38"> 38 </div>
+          <div class="size-picker" value="38 2/3"> 38 2/3 </div>
+          <div class="size-picker" value="39 1/3"> 39 1/3 </div>
+          <div class="size-picker" value="40"> 40 </div>
+          <div class="size-picker" value="40 2/3"> 40 2/3 </div>
+          <div class="size-picker" value="40"> 40 </div>
+          <div class="size-picker" value="40 2/3"> 40 2/3 </div>
+          <div class="size-picker" value="41 1/3"> 41 1/3 </div>
+          <div class="size-picker" value="42"> 42 </div>
+          <div class="size-picker" value="42 2/3"> 42 2/3 </div>
+          <div class="size-picker" value="43 1/3"> 43 1/3 </div>
+          <div class="size-picker" value="44"> 44 </div>
+          <div class="size-picker" value="44 2/3"> 44 2/3 </div>
+          <div class="size-picker" value="45 1/3"> 45 1/3 </div>
+          <div class="size-picker" value="46"> 46 </div>
+          <div class="size-picker" value="46 2/3"> 46 2/3 </div>
+          <div class="size-picker" value="47 1/3"> 47 1/3 </div>
+          <div class="size-picker" value="48"> 48 </div>
+          <div class="size-picker" value="48 2/3"> 48 2/3 </div>
+          <div class="size-picker" value="48 2/3"> 48 2/3 </div>
+          <div class="size-picker" value="49 1/3"> 49 1/3 </div>
+          <div class="size-picker" value="50"> 50 </div>
+          <div class="size-picker" value="50 2/3"> 50 2/3 </div>
+          <div class="size-picker" value="51 1/3"> 51 1/3 </div>
+          <div class="size-picker" value="52 2/3"> 52 2/3 </div>
+        </div>
+      </div>
+      <div class="task-info" id="billing">
+        <input type="text" placeholder="Task name" id="task-name">
+        <input type="text" placeholder="Name" id="task-real">
+        <input type="text" placeholder="Surname" id="task-surname">
+        <input type="text" placeholder="E-mail" id="task-email">
+        <input type="text" placeholder="Address" id="task-address">
+        <input type="text" placeholder="Apt/Suite (optional)" id="task-apt">
+        <input type="text" placeholder="City" id="task-city">
+        <input type="text" placeholder="Country" id="task-country">
+        <input type="text" placeholder="Province" id="task-province">
+        <input type="text" placeholder="ZIP code" id="task-zip">
+        <input type="text" placeholder="Phone" id="task-phone">
+        <input type="text" placeholder="Credit card number" id="task-cc">
+        <input type="text" placeholder="Name on card" id="task-name-cc">
+        <input type="text" placeholder="MM/YY" id="task-expiry">
+        <input type="text" placeholder="CVV" id="task-cvv">
+      </div>
+    </div>
+  </body>
+</html>
+<script> require("../lib/ipc/yeezy-task.js") </script>

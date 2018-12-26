@@ -4,6 +4,7 @@ const {app, shell, ipcMain, BrowserWindow, session, dialog, Menu} = require('ele
 const DATA_DIR = app.getPath('userData');
 const utils = require("./lib/Utils");
 const Task = require("./lib/Task");
+const YeezyTask = require("./lib/YeezyTask");
 utils.DATA_DIR = DATA_DIR
 const fs = require("fs");
 const express = require("express");
@@ -31,7 +32,7 @@ logger.info('starting up NodeCop')
 
 ///////// MAIN WINDOW
 
-var main, google, taskCreator, tasks = {}, captchas = {}, c = [], expressApp, server;
+var main, google, taskCreator, tasks = {}, yeezy = {}, captchas = {}, c = [], expressApp, server;
 
 expressApp = express() // useful for captchas and proxy
 expressApp.set('port', 9090);
@@ -83,14 +84,21 @@ var init = () => {
 
       entries.map(e => {
 
-        var t = new Task(e[1], new Waiter())
-        tasks[e[0]] = t;
+        if(e[0].split("-").length > 0){
+          var t = new YeezyTask(e[1])
+          yeezy[e[0]] = t;
+        }else{
+          var t = new Task(e[1])
+          tasks[e[0]] = t;
+        }
 
       })
 
       main = new BrowserWindow({width: 800, height: 900, minHeight: 900, minWidth: 800, show: false, fullscreenable: true, center: true})
       const m = Menu.buildFromTemplate(mainTemplate);
       Menu.setApplicationMenu(m)
+
+      console.log("asdads");
 
       main.loadURL(`file://${__dirname}/views/index.html`);
       main.on('ready-to-show', () => {
@@ -109,7 +117,7 @@ var init = () => {
 
 // TASK CREATOR WINDOW
 
-var task = () => {
+var task = (isYeezy) => {
 
   taskCreator = new BrowserWindow({
 
@@ -129,7 +137,10 @@ var task = () => {
 
   });
 
-  taskCreator.loadURL(`file://${__dirname}/views/task.html`);
+  if(isYeezy)
+    taskCreator.loadURL(`file://${__dirname}/views/yeezysupply-task.html`);
+  else
+    taskCreator.loadURL(`file://${__dirname}/views/task.html`);
 
   taskCreator.on('ready-to-show', () => {
 
@@ -240,8 +251,25 @@ var loadCaptcha = async(id, name) => {
 
 }
 
+/*var runYzyTask = async(id) => {
 
-var runTask = (id) => {
+  var task = yeezy[id];
+
+  task.run();
+
+  task.on('nope', () => {
+
+    setTimeout(() => {
+
+      task.run()
+
+    }, 7500)
+
+  })
+
+}*/
+
+var runTask = async(id) => {
 
   var task = tasks[id];
 
@@ -310,9 +338,15 @@ ipcMain.on('stop-task', (event, id) => {
 
 ipcMain.on('run-task', async(event, id) => {
 
-  runTask(id)
+  await runTask(id)
 
 })
+
+/*ipcMain.on('run-yzy-task', async(event, id) => {
+
+  await runYzyTask(id)
+
+})*/
 
 ipcMain.on('remove-task', async(event, id) => {
 
@@ -325,24 +359,15 @@ ipcMain.on('remove-task', async(event, id) => {
 
 })
 
+/*ipcMain.on('create-task-yeezy', (event, item) => {
+
+  createTask(item, true)
+
+})*/
+
 ipcMain.on('create-task', (event, item) => {
 
-  logger.info('creating new task (', item.task_id, ' - ', item.task_name, ')')
-  utils.config[item.task_id] = item;
-  utils.updateConfig(utils.config)
-    .then(success => {
-
-      var t = new Task(item, new Waiter());
-      tasks[item.item_id] = t;
-      main.webContents.send('task-update', item)
-
-    })
-
-    .catch(err => {
-
-      logger.error('uh oh', err)
-
-    })
+  createTask(item)
 
 })
 
@@ -357,6 +382,12 @@ ipcMain.on('new-task', () => {
   task();
 
 })
+
+/*ipcMain.on('new-task-yeezy', () => {
+
+  task(true);
+
+})*/
 
 
 // App related stuff
@@ -376,3 +407,31 @@ app.on('activate', () => {
     init()
 
 })
+
+var createTask = async(item, isYeezy) => {
+
+  logger.info('creating new task (', item.task_id, ' - ', item.task_name, ')')
+  utils.config[item.task_id] = item;
+  utils.updateConfig(utils.config)
+    .then(success => {
+
+
+      if(isYeezy){
+        var t = new YeezyTask(item);
+        yeezy[item.task_id] = t;
+      }else{
+        var t = new Task(item);
+        tasks[item.task_id] = t;
+      }
+
+      main.webContents.send('task-update', item)
+
+    })
+
+    .catch(err => {
+
+      logger.error('uh oh', err)
+
+    })
+
+}

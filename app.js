@@ -20,23 +20,24 @@ if (!fs.existsSync(DATA_DIR + '/data')) {
     fs.mkdirSync(DATA_DIR + '/data')
 }
 
-const SimpleNodeLogger = require('simple-node-logger'),
-    opts = {
-        logFilePath: DATA_DIR + '/logs/latest.log',
-        timestampFormat: 'YYYY-MM-DD HH:mm:ss.SSS'
-    },
-logger = SimpleNodeLogger.createSimpleLogger(opts);
-utils.logger = logger;
-
+const logger = require('electron-log');
+logger.transports.file.level = true;
+logger.transports.console.level = true;
+logger.transports.console.format = '{h}:{i}:{s}:{ms} {text}';
+logger.transports.file.file = DATA_DIR + '/logs/latest.log';
+utils.logger = logger
 logger.info('starting up NodeCop')
 
 ///////// MAIN WINDOW
 
-var main, google, taskCreator, tasks = {}, captchas = {}, c = [], expressApp, server, trainer, logs;
-expressApp = express() // useful for captchas and proxy
+var main, google, taskCreator, tasks = {}, captchas = {}, c = [], expressApp, trainerApp, server, trainer, logs;
+expressApp = express(), trainerApp = express() // useful for captchas and proxy
 expressApp.set('port', 2222);
+trainerApp.set('port', 2221);
 expressApp.use(bodyParser.json());
 expressApp.use(bodyParser.urlencoded({ extended: true }));
+trainerApp.use(bodyParser.json());
+trainerApp.use(bodyParser.urlencoded({ extended: true }));
 
 expressApp.get('/c', (req, res) => {
 
@@ -44,7 +45,14 @@ expressApp.get('/c', (req, res) => {
 
 })
 
+/*expressApp.get('/', (req, res) => {
+
+
+
+})*/
+
 expressApp.listen(expressApp.get('port'));
+trainerApp.listen(trainerApp.get('port'));
 
 const mainTemplate = [
 
@@ -71,12 +79,6 @@ const mainTemplate = [
 ]
 
 var init = () => {
-
-  session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
-      callback({ responseHeaders: Object.assign({
-          "Content-Security-Policy": [ "default-src 'self'" ]
-      }, details.responseHeaders)});
-  });
 
   utils.loadConfig()
     .then(success => {
@@ -223,16 +225,15 @@ var loadTrainer = async() => {
       width: 1000
 
   })
+  trainerApp.get('/', (req, res) => {
 
-  expressApp.get('/', (req, res) => {
-
-      res.sendFile('./views/captcha.html', {root: __dirname});
-      trainer.webContents.session.setProxy({proxyRules: ""}, () => {})
+    res.sendFile('./views/captcha.html', {root: __dirname});
+    trainer.webContents.session.setProxy({proxyRules: ""}, () => {})
 
   })
 
   main.webContents.session.setProxy({
-    proxyRules: `http://127.0.0.1:2222`
+    proxyRules: `http://127.0.0.1:2221`
   },
     function (r) {
       trainer.loadURL('http://www.supremenewyork.com');
@@ -244,7 +245,7 @@ var loadTrainer = async() => {
       trainer = null;
   })
   trainer.show();
-  //trainer.openDevTools();
+  trainer.openDevTools();
   return trainer;
 
 }
@@ -314,8 +315,8 @@ var loadCaptcha = async(id, name) => {
 
   expressApp.get('/', (req, res) => {
 
-      res.sendFile('./views/captcha.html', {root: __dirname});
-      last.webContents.session.setProxy({proxyRules: ""}, () => {})
+    res.sendFile('./views/captcha.html', {root: __dirname});
+    last.webContents.session.setProxy({proxyRules: ""}, () => {})
 
   })
 
@@ -334,7 +335,7 @@ var loadCaptcha = async(id, name) => {
       main.webContents.send('closed', id)
   })
   last.show();
-  //1last.openDevTools();
+  last.openDevTools();
   last["task_id"] = id;
   return last
 

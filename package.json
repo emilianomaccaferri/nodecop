@@ -1,10 +1,11 @@
 {
-  "name": "nodecop",
-  "version": "1.0.0",
+  "name": "NodeCop",
+  "version": "beta 0.0.1",
   "description": "A Node.js based Supreme bot",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dist": "build"
   },
   "repository": {
     "type": "git",
@@ -22,12 +23,20 @@
   "bugs": {
     "url": "https://github.com/emilianomaccaferri/nodecop/issues"
   },
-  "homepage": "https://github.com/emilianomaccaferri/nodecop#readme",
+  "build": {
+    "win": {
+      "target": "NSIS",
+      "icon": "./icon.ico"
+    }
+  },
+  "homepage": "https://nodecop.emilianomaccaferri.com",
   "devDependencies": {
-    "electron": "^3.0.13"
+    "electron": "^3.0.13",
+    "electron-builder": "^20.38.4"
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
+    "electron-log": "^2.2.17",
     "express": "^4.16.4",
     "html-entities": "^1.2.1",
     "jquery": "^3.3.1",
@@ -35,7 +44,6 @@
     "promise": "^8.0.2",
     "randomstring": "^1.1.5",
     "request": "^2.88.0",
-    "request-promise": "^4.2.2",
-    "simple-node-logger": "^0.93.40"
+    "request-promise": "^4.2.2"
   }
 }

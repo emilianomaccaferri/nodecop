@@ -32,7 +32,7 @@ logger.info('starting up NodeCop')
 
 ///////// MAIN WINDOW
 
-var main, google, taskCreator, tasks = {}, captchas = {}, c = [], expressApp, server, trainer;
+var main, google, taskCreator, tasks = {}, captchas = {}, c = [], expressApp, server, trainer, logs;
 expressApp = express() // useful for captchas and proxy
 expressApp.set('port', 2222);
 expressApp.use(bodyParser.json());
@@ -72,6 +72,12 @@ const mainTemplate = [
 
 var init = () => {
 
+  session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+      callback({ responseHeaders: Object.assign({
+          "Content-Security-Policy": [ "default-src 'self'" ]
+      }, details.responseHeaders)});
+  });
+
   utils.loadConfig()
     .then(success => {
 
@@ -96,8 +102,14 @@ var init = () => {
       main.on('ready-to-show', () => {
 
         main.webContents.send('config', utils.config)
-        // main.openDevTools();
+        main.openDevTools();
         main.show();
+
+      })
+
+      main.on('close', () => {
+
+        app.quit();
 
       })
 
@@ -237,6 +249,44 @@ var loadTrainer = async() => {
 
 }
 
+var openLogs = async() => {
+
+  if(logs != null)
+    return;
+
+  logs = new BrowserWindow({
+
+    backgroundColor: '#ffffff',
+    center: true,
+    fullscreen: false,
+    height: 650,
+    maximizable: false,
+    minimizable: false,
+    resizable: false,
+    show: false,
+    skipTaskbar: true,
+    title: 'Logger',
+    useContentSize: true,
+    width: 500
+
+  })
+
+  logs.loadURL(`file://${__dirname}/views/logs.html`);
+  logs.on('ready-to-show', () => {
+
+    logs.openDevTools();
+    logs.show();
+
+  })
+
+  logs.on('close', () => {
+
+    logs = null;
+
+  })
+
+}
+
 var loadCaptcha = async(id, name) => {
 
   // thanks to https://github.com/dzt/captcha-harvester
@@ -254,7 +304,7 @@ var loadCaptcha = async(id, name) => {
       skipTaskbar: true,
       title: name,
       useContentSize: true,
-      width: 1000
+      width: 500
 
   })
 
@@ -312,7 +362,7 @@ var runTask = async(id) => {
 
   var task = tasks[id];
 
-  task.run();
+  task.run(true);
 
   task.on('error', (err) => {
 
@@ -358,6 +408,12 @@ var runTask = async(id) => {
 
 
 // IPC Events
+
+ipcMain.on('logs', (event) => {
+
+  openLogs();
+
+})
 
 ipcMain.on('captcha-incoming', (event, captcha) => {
 
@@ -433,6 +489,19 @@ ipcMain.on('trainer', () => {
 
 })
 
+ipcMain.on('donate', () => {
+
+  shell.openExternal('https://paypal.me/maccaferri');
+
+})
+
+
+ipcMain.on('info', () => {
+
+  shell.openExternal('https://nodecop.emilianomaccaferri.com');
+
+})
+
 ipcMain.on('close', () => {
 
   app.quit();
@@ -447,6 +516,12 @@ ipcMain.on('close', () => {
 
 // App related stuff
 app.on('ready', init)
+app.on('quit', () => {
+
+  console.log("hehe");
+  fs.renameSync(DATA_DIR + '/logs/latest.log', DATA_DIR + '/logs/nodecop-' + new Date().getTime() + '.log')
+
+})
 app.on('window-all-closed', () => {
 
   fs.renameSync(DATA_DIR + '/logs/latest.log', DATA_DIR + '/logs/nodecop-' + new Date().getTime() + '.log')
@@ -457,6 +532,7 @@ app.on('window-all-closed', () => {
     app.quit()
 
 })
+
 
 app.on('activate', () => {
 

@@ -13,6 +13,11 @@ const path = require("path")
 
 // btw thanks to https://github.com/dzt/captcha-harvester for the captcha stuff
 
+console.log(process.versions['chrome']);
+
+if(!fs.existsSync(DATA_DIR))
+  fs.mkdirSync(DATA_DIR)
+
 if (!fs.existsSync(DATA_DIR + '/logs')) {
     fs.mkdirSync(DATA_DIR + '/logs')
 }
@@ -43,13 +48,7 @@ expressApp.get('/c', (req, res) => {
 
   res.json(c)
 
-})
-
-/*expressApp.get('/', (req, res) => {
-
-
-
-})*/
+});
 
 expressApp.listen(expressApp.get('port'));
 trainerApp.listen(trainerApp.get('port'));
@@ -80,6 +79,11 @@ const mainTemplate = [
 
 var init = () => {
 
+  session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
+  details.requestHeaders['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538 Safari/537.36';
+  callback({ cancel: false, requestHeaders: details.requestHeaders });
+  });
+
   utils.loadConfig()
     .then(success => {
 
@@ -104,7 +108,7 @@ var init = () => {
       main.on('ready-to-show', () => {
 
         main.webContents.send('config', utils.config)
-        main.openDevTools();
+        // main.openDevTools();
         main.show();
 
       })
@@ -245,7 +249,7 @@ var loadTrainer = async() => {
       trainer = null;
   })
   trainer.show();
-  trainer.openDevTools();
+  // trainer.openDevTools();
   return trainer;
 
 }
@@ -275,7 +279,7 @@ var openLogs = async() => {
   logs.loadURL(`file://${__dirname}/views/logs.html`);
   logs.on('ready-to-show', () => {
 
-    logs.openDevTools();
+    // logs.openDevTools();
     logs.show();
 
   })
@@ -311,7 +315,6 @@ var loadCaptcha = async(id, name) => {
 
   var last = captchas[id];
   console.log(captchas)
-  //var captchas[last - 1] = captchas[last - 1];
 
   expressApp.get('/', (req, res) => {
 
@@ -332,10 +335,9 @@ var loadCaptcha = async(id, name) => {
     last.once('closed', function() {
       delete captchas[id];
       last = null;
-      main.webContents.send('closed', id)
   })
   last.show();
-  last.openDevTools();
+  // last.openDevTools();
   last["task_id"] = id;
   return last
 
@@ -373,7 +375,10 @@ var runTask = async(id) => {
 
   task.on('pay-url', (url) => {
 
-    shell.openExternal(url)
+    if(!url[0])
+      return dialog.showErrorBox('Error from Supreme', JSON.stringify(url[1]))
+
+    shell.openExternal(url[0])
 
   })
 

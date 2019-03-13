@@ -1,6 +1,6 @@
 {
   "name": "NodeCop",
-  "version": "beta 0.0.1",
+  "version": "1.0.0",
   "description": "A Node.js based Supreme bot",
   "main": "app.js",
   "scripts": {

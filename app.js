@@ -4,14 +4,13 @@ const {app, shell, ipcMain, BrowserWindow, session, dialog, Menu} = require('ele
 const DATA_DIR = app.getPath('userData');
 const utils = require("./lib/Utils");
 const Task = require("./lib/Task");
-const YeezyTask = require("./lib/YeezyTask");
 utils.DATA_DIR = DATA_DIR
 const fs = require("fs");
 const express = require("express");
 const bodyParser = require("body-parser");
 const path = require("path")
 
-// btw thanks to https://github.com/dzt/captcha-harvester for the captcha stuff
+// thanks to https://github.com/dzt/captcha-harvester for the captcha stuff
 
 console.log(process.versions['chrome']);
 
@@ -35,7 +34,7 @@ logger.info('starting up NodeCop')
 
 ///////// MAIN WINDOW
 
-var main, google, taskCreator, tasks = {}, captchas = {}, c = [], expressApp, trainerApp, server, trainer, logs;
+var main, google, taskCreator, tasks = {}, captchas = {}, c = [], expressApp, trainerApp, server, trainer, logs, profiles;
 expressApp = express(), trainerApp = express() // useful for captchas and proxy
 expressApp.set('port', 2222);
 trainerApp.set('port', 2221);
@@ -80,15 +79,15 @@ const mainTemplate = [
 var init = () => {
 
   session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
-  details.requestHeaders['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538 Safari/537.36';
-  callback({ cancel: false, requestHeaders: details.requestHeaders });
+    details.requestHeaders['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538 Safari/537.36';
+    callback({ cancel: false, requestHeaders: details.requestHeaders });
   });
 
   utils.loadConfig()
     .then(success => {
 
       logger.info('config decrypted')
-      var entries = Object.entries(utils.config);
+      var entries = Object.entries(utils.config.items);
 
       // we load tasks so we already have them in memory
       // just to speed up things
@@ -107,8 +106,8 @@ var init = () => {
       main.loadURL(`file://${__dirname}/views/index.html`);
       main.on('ready-to-show', () => {
 
-        main.webContents.send('config', utils.config)
-        // main.openDevTools();
+        main.webContents.send('config', utils.config.items)
+        main.openDevTools();
         main.show();
 
       })
@@ -155,7 +154,9 @@ var task = (isYeezy) => {
   taskCreator.on('ready-to-show', () => {
 
     taskCreator.show();
-    // taskCreator.openDevTools();
+    taskCreator.openDevTools();
+    console.log(utils.config.profiles);
+    taskCreator.webContents.send('profiles', utils.config.profiles)
     taskCreator.setAlwaysOnTop(true)
 
   })
@@ -249,7 +250,7 @@ var loadTrainer = async() => {
       trainer = null;
   })
   trainer.show();
-  // trainer.openDevTools();
+  trainer.openDevTools();
   return trainer;
 
 }
@@ -343,23 +344,48 @@ var loadCaptcha = async(id, name) => {
 
 }
 
-/*var runYzyTask = async(id) => {
+///////// PROFILE CREATOR / EDITOR
 
-  var task = yeezy[id];
+var loadProfiles = () => {
 
-  task.run();
+  profiles = new BrowserWindow({
 
-  task.on('nope', () => {
+    backgroundColor: '#fff',
+    center: true,
+    alwaysOnTop: true,
+    fullscreen: false,
+    height: 900,
+    maximizable: false,
+    minimizable: true,
+    resizable: false,
+    show: false,
+    skipTaskbar: true,
+    title: 'Profile editor',
+    useContentSize: true,
+    width: 700
 
-    setTimeout(() => {
+  });
 
-      task.run()
 
-    }, 7500)
+  profiles.loadURL(`file://${__dirname}/views/profiles.html`);
+
+  profiles.on('ready-to-show', () => {
+
+    profiles.show();
+    profiles.openDevTools();
+    profiles.setAlwaysOnTop(true)
+    console.log(utils.config.profiles);
+    profiles.webContents.send('profiles', utils.config.profiles)
 
   })
 
-}*/
+  profiles.on('closed', () => {
+
+    profiles = null;
+
+  })
+
+}
 
 var runTask = async(id) => {
 
@@ -425,6 +451,7 @@ ipcMain.on('captcha-incoming', (event, captcha) => {
 
   'use strict';
 
+  utils.latestCaptchas.push(captcha.captcha);
   var task = tasks[captcha.task_id];
 
   logger.info(`got captcha response for task #${captcha.task_id}`)
@@ -456,9 +483,9 @@ ipcMain.on('run-task', async(event, id) => {
 
 ipcMain.on('remove-task', async(event, id) => {
 
-  var item = utils.config[id]
+  var item = utils.config.items[id]
   logger.info('removing task (', item.task_id, ' - ', item.task_name, ')')
-  delete utils.config[item.task_id];
+  delete utils.config.items[id];
   delete tasks[id]
   await utils.updateConfig(utils.config)
   logger.info('config updated')
@@ -474,6 +501,13 @@ ipcMain.on('remove-task', async(event, id) => {
 ipcMain.on('create-task', (event, item) => {
 
   createTask(item)
+
+})
+
+ipcMain.on('create-profile', (event, item) => {
+
+  console.log(item);
+  createProfile(item)
 
 })
 
@@ -495,6 +529,22 @@ ipcMain.on('trainer', () => {
 
 })
 
+ipcMain.on('profiles', () => {
+
+  loadProfiles();
+
+})
+
+ipcMain.on('run-many', (e, items) => {
+
+  items.forEach(item => {
+
+    runTask(item)
+
+  })
+
+})
+
 ipcMain.on('donate', () => {
 
   shell.openExternal('https://paypal.me/maccaferri');
@@ -513,11 +563,6 @@ ipcMain.on('close', () => {
   app.quit();
 
 })
-/*ipcMain.on('new-task-yeezy', () => {
-
-  task(true);
-
-})*/
 
 
 // App related stuff
@@ -547,13 +592,32 @@ app.on('activate', () => {
 
 })
 
-var createTask = async(item, isYeezy) => {
+var createProfile = async(item) => {
 
-  logger.info('creating new task (', item.task_id, ' - ', item.task_name, ')')
-  utils.config[item.task_id] = item;
+  logger.info('creating new profile (', item.profile_id, ' - ', item.profile_name, ')')
+  utils.config.profiles[item.profile_id] = item;
   utils.updateConfig(utils.config)
     .then(success => {
 
+      profiles.webContents.send('profile-update', item)
+
+    })
+
+    .catch(err => {
+
+      logger.error('uh oh', err)
+
+    })
+
+}
+
+
+var createTask = async(item, isYeezy) => {
+
+  logger.info('creating new task (', item.task_id, ' - ', item.task_name, ')')
+  utils.config.items[item.task_id] = item;
+  utils.updateConfig(utils.config)
+    .then(success => {
 
       if(isYeezy){
         var t = new YeezyTask(item);

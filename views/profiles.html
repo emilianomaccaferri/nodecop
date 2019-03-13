@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <title> Create a task </title>
+  <link href="css/style.css" rel="stylesheet" type="text/css">
+  <link href="fontawesome/css/all.css" rel="stylesheet" type="text/css">
+  <body style="overflow-x: hidden;">
+    <div class="sider small grey">
+      <div class="icon d" id="create"> <p class="label"> Create </p> <i class="fas fa-plus"></i> </div>
+    </div>
+    <div class="container">
+      <div class="header">
+        <h1> Profile editor </h1>
+        <h2 class="thin">View, add and edit profiles</h2>
+        <div class="chooser">
+          <div class="picker selected"> New profile </div>
+          <div class="picker" id="item"> Profiles </div>
+        </div>
+      </div>
+      <div class="task-info" id="i" style="position: absolute; background: #fff; z-index: 4; width: calc(100% - 60px); height: 600px; right: -700px;">
+        <p> Existing profiles </p>
+        <div id="profiles">
+        </div>
+      </div>
+      <div class="task-info" id="billing">
+        <input type="text" placeholder="Profile name" id="task-name">
+        <input type="text" placeholder="Billing name" id="task-billing-name">
+        <input type="text" placeholder="Email" id="task-email">
+        <input type="tel" placeholder="Telephone number" id="task-telephone">
+        <input type="text" placeholder="City" id="task-city">
+        <input type="text" placeholder="Country" id="task-country">
+        <input type="text" placeholder="Address" id="task-address">
+        <input type="number" placeholder="ZIP Code" id="task-zip-code">
+        <div class="chooser" style="justify-content: center;">
+          <div class="cc-picker" value="paypal"> Pay with PayPal </div>
+          <div class="cc-picker" value="cc"> Pay with CC </div>
+        </div>
+        <div class="cc">
+          <input type="text" placeholder="Credit card number" id="task-cc-number">
+          <select id="task-cc-type">
+            <option value=""
+          </select>
+          <input type="text" placeholder="Credit card expiry (month/year)" id="task-cc-expiry">
+          <input type="number" maxlength="3" placeholder="Credit card CVV (three digits on the back)" id="task-cc-cvv">
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+<script> require("../lib/ipc/profiles.js") </script>
